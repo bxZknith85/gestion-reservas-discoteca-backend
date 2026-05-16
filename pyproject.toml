@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gestion-reservas-discoteca"
+version = "1.0.0"
+description = "Sistema de gestión de reservas para discotecas"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "Tu Nombre", email = "tu.email@example.com"}]
+
+[project.urls]
+Repository = "https://github.com/bxZknith85/gestion-reservas-discoteca-backend"
