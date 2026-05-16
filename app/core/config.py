@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    """Configuración de la aplicación"""
+    """Configuración de la aplicación - Supabase"""
     
     # API
     API_V1_STR: str = "/api/v1"
@@ -12,23 +12,27 @@ class Settings(BaseSettings):
     PROJECT_DESCRIPTION: str = "Sistema backend para gestión de reservas en discotecas"
     VERSION: str = "1.0.0"
     
-    # Database
+    # Database - Supabase PostgreSQL
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL",
-        "postgresql://user:password@localhost:5432/gestion_reservas"
+        "postgresql://postgres:password@localhost:5432/postgres"
     )
     
     # JWT
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-change-this")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # CORS
-    BACKEND_CORS_ORIGINS: list = ["http://localhost:3000", "http://localhost:8000"]
+    BACKEND_CORS_ORIGINS: list = ["http://localhost:3000", "http://localhost:8000", "https://localhost:3000"]
     
     # Environment
     DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+    
+    # Supabase
+    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
+    SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")
     
     class Config:
         env_file = ".env"

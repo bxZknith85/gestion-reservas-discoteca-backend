@@ -1,6 +1,13 @@
-from .reservas import router as reservas_router
-from .usuarios import router as usuarios_router
-from .eventos import router as eventos_router
-from .salas import router as salas_router
+from .users import router as users_router
+from .events import router as events_router
+from .tables import router as tables_router
+from .reservations import router as reservations_router
+from .orders import router as orders_router
 
-__all__ = ["reservas_router", "usuarios_router", "eventos_router", "salas_router"]
+__all__ = [
+    "users_router",
+    "events_router", 
+    "tables_router",
+    "reservations_router",
+    "orders_router",
+]

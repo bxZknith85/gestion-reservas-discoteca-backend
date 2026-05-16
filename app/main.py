@@ -4,13 +4,24 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.database import Base, engine
 from app.api.v1.endpoints import (
-    reservas_router,
-    usuarios_router,
-    eventos_router,
-    salas_router,
+    users_router,
+    events_router,
+    tables_router,
+    reservations_router,
+    orders_router,
 )
 
-# Crear tablas
+# Importar todos los modelos para que SQLAlchemy los registre
+from app.models import (
+    TypeUser, EventState, ReservationState, TableState,
+    TableType, TicketState, PaymentMethod, OrderStatus,
+    User, Event, DicoTable, TypeTicket, TablePrice,
+    Order, Reservation, Ticket, OrderDetail, Payment,
+    AuditLog,
+    AdminActionLog, AppConfig,
+)
+
+# Crear tablas (solo si no existen)
 Base.metadata.create_all(bind=engine)
 
 # Crear aplicación
@@ -18,6 +29,7 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     description=settings.PROJECT_DESCRIPTION,
     version=settings.VERSION,
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
 )
 
 # CORS middleware
@@ -30,28 +42,31 @@ app.add_middleware(
 )
 
 # Incluir routers
-app.include_router(usuarios_router, prefix=settings.API_V1_STR)
-app.include_router(salas_router, prefix=settings.API_V1_STR)
-app.include_router(eventos_router, prefix=settings.API_V1_STR)
-app.include_router(reservas_router, prefix=settings.API_V1_STR)
+app.include_router(users_router, prefix=settings.API_V1_STR)
+app.include_router(events_router, prefix=settings.API_V1_STR)
+app.include_router(tables_router, prefix=settings.API_V1_STR)
+app.include_router(reservations_router, prefix=settings.API_V1_STR)
+app.include_router(orders_router, prefix=settings.API_V1_STR)
 
 
 @app.get("/")
 def read_root():
     """Health check endpoint"""
     return {
-        "message": "Gestión de Reservas de Discoteca - Backend",
+        "message": "Gestión de Reservas de Discoteca - Backend API",
         "version": settings.VERSION,
         "environment": settings.ENVIRONMENT,
+        "docs": f"{settings.API_V1_STR}/docs",
     }
 
 
-@app.get("/api/v1/health")
+@app.get(f"{settings.API_V1_STR}/health")
 def health_check():
     """Health check endpoint"""
     return {
         "status": "healthy",
         "service": settings.PROJECT_NAME,
+        "version": settings.VERSION,
     }
 
 
