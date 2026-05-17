@@ -12,13 +12,16 @@ router = APIRouter(prefix="/users", tags=["users"])
 @router.post("/", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
 def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     """Crear un nuevo usuario"""
-    usuario_existente = CRUDUsuario.obtener_por_email(db, usuario.email)
-    if usuario_existente:
+    if CRUDUsuario.obtener_por_email(db, usuario.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email ya registrado"
         )
-    
+    if CRUDUsuario.obtener_por_telefono(db, usuario.phone_number):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Teléfono ya registrado"
+        )
     return CRUDUsuario.crear(db, usuario)
 
 

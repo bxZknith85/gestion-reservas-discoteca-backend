@@ -27,6 +27,10 @@ class CRUDUsuario:
     @staticmethod
     def obtener_por_email(db: Session, email: str) -> User:
         return db.query(User).filter(User.email == email).first()
+
+    @staticmethod
+    def obtener_por_telefono(db: Session, phone_number: str) -> User:
+        return db.query(User).filter(User.phone_number == phone_number).first()
     
     @staticmethod
     def obtener_por_username(db: Session, username: str) -> User:

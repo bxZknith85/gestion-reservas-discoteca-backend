@@ -12,6 +12,11 @@ router = APIRouter(prefix="/tables", tags=["tables"])
 @router.post("/", response_model=DicoTableResponse, status_code=status.HTTP_201_CREATED)
 def crear_mesa(mesa: DicoTableCreate, db: Session = Depends(get_db)):
     """Crear una nueva mesa"""
+    if crud_table.obtener_por_numero(db, mesa.number):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Ya existe una mesa con el número {mesa.number}"
+        )
     return crud_table.crear(db, mesa)
 
 

@@ -17,6 +17,10 @@ class CRUDDicoTable:
         return db.query(DicoTable).filter(DicoTable.id == table_id).first()
 
     @staticmethod
+    def obtener_por_numero(db: Session, number: int) -> DicoTable:
+        return db.query(DicoTable).filter(DicoTable.number == number).first()
+
+    @staticmethod
     def obtener_todas(db: Session, skip: int = 0, limit: int = 100) -> list[DicoTable]:
         return db.query(DicoTable).offset(skip).limit(limit).all()
 
