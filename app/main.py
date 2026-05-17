@@ -21,8 +21,9 @@ from app.models import (
     AdminActionLog, AppConfig,
 )
 
-# Crear tablas (solo si no existen)
-Base.metadata.create_all(bind=engine)
+# Nota: Las tablas ya existen en Supabase (ejecutadas desde schema_db.sql)
+# No crear tablas automáticamente al startup con NullPool
+# Base.metadata.create_all(bind=engine)
 
 # Crear aplicación
 app = FastAPI(

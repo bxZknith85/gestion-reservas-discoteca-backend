@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.schemas.event import EventCreate, EventResponse, EventUpdate
-from app.crud.evento import CRUDEvento
+from app.crud import event as crud_event
 
 router = APIRouter(prefix="/events", tags=["events"])
 
@@ -12,13 +12,13 @@ router = APIRouter(prefix="/events", tags=["events"])
 @router.post("/", response_model=EventResponse, status_code=status.HTTP_201_CREATED)
 def crear_evento(evento: EventCreate, db: Session = Depends(get_db)):
     """Crear un nuevo evento"""
-    return CRUDEvento.crear(db, evento)
+    return crud_event.crear(db, evento)
 
 
 @router.get("/{event_id}", response_model=EventResponse)
 def obtener_evento(event_id: int, db: Session = Depends(get_db)):
     """Obtener un evento por ID"""
-    evento = CRUDEvento.obtener_por_id(db, event_id)
+    evento = crud_event.obtener_por_id(db, event_id)
     if not evento:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -30,13 +30,13 @@ def obtener_evento(event_id: int, db: Session = Depends(get_db)):
 @router.get("/", response_model=list[EventResponse])
 def listar_eventos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """Listar todos los eventos"""
-    return CRUDEvento.obtener_todos(db, skip, limit)
+    return crud_event.obtener_todos(db, skip, limit)
 
 
 @router.put("/{event_id}", response_model=EventResponse)
 def actualizar_evento(event_id: int, evento_update: EventUpdate, db: Session = Depends(get_db)):
     """Actualizar un evento"""
-    evento = CRUDEvento.actualizar(db, event_id, evento_update)
+    evento = crud_event.actualizar(db, event_id, evento_update)
     if not evento:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -48,7 +48,7 @@ def actualizar_evento(event_id: int, evento_update: EventUpdate, db: Session = D
 @router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
 def eliminar_evento(event_id: int, db: Session = Depends(get_db)):
     """Eliminar un evento"""
-    if not CRUDEvento.eliminar(db, event_id):
+    if not crud_event.eliminar(db, event_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Evento no encontrado"

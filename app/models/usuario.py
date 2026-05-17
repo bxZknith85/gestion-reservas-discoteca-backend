@@ -23,25 +23,6 @@ class RolUsuario(str, Enum):
     GERENTE = "gerente"
 
 
-class Usuario(Base):
-    """Modelo de Usuario"""
-    __tablename__ = "usuarios"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(255), unique=True, index=True, nullable=False)
-    username = Column(String(100), unique=True, index=True, nullable=False)
-    nombre_completo = Column(String(255), nullable=False)
-    hashed_password = Column(String(255), nullable=False)
-    numero_telefono = Column(String(20), nullable=True)
-    rol = Column(SQLEnum(RolUsuario), default=RolUsuario.CLIENTE, nullable=False)
-    activo = Column(Boolean, default=True, index=True)
-    fecha_creacion = Column(DateTime(timezone=True), server_default=func.now())
-    fecha_actualizacion = Column(DateTime(timezone=True), onupdate=func.now())
-    
-    # Relaciones
-    reservas = relationship("Reserva", back_populates="usuario")
-
-
 class Sala(Base):
     """Modelo de Sala"""
     __tablename__ = "salas"

@@ -1,11 +1,11 @@
 from .usuario import CRUDUsuario
-from .reserva import CRUDReserva
-from .evento import CRUDEvento
-from .sala import CRUDSala
+from .event import CRUDEvent
+from .dico_table import CRUDDicoTable
+from .reservation import CRUDReservation
 
 usuario = CRUDUsuario()
-reserva = CRUDReserva()
-evento = CRUDEvento()
-sala = CRUDSala()
+event = CRUDEvent()
+table = CRUDDicoTable()
+reservation = CRUDReservation()
 
-__all__ = ["usuario", "reserva", "evento", "sala"]
+__all__ = ["usuario", "event", "table", "reservation"]
