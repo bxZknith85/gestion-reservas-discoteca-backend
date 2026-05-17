@@ -1,8 +1,10 @@
 """Schemas Pydantic para pagos"""
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, field_validator
+from typing import Optional, Literal
 from datetime import datetime
 from decimal import Decimal
+
+PAYMENT_STATUSES = {"pending", "confirmed", "rejected", "refunded"}
 
 
 class PaymentBase(BaseModel):
@@ -13,6 +15,13 @@ class PaymentBase(BaseModel):
     voucher_url: Optional[str] = None
     reference_number: Optional[str] = None
     notes: Optional[str] = None
+
+    @field_validator("status")
+    @classmethod
+    def validar_status(cls, v: str) -> str:
+        if v not in PAYMENT_STATUSES:
+            raise ValueError(f"Status inválido: '{v}'. Permitidos: {', '.join(sorted(PAYMENT_STATUSES))}")
+        return v
 
 
 class PaymentCreate(PaymentBase):
@@ -25,6 +34,13 @@ class PaymentUpdate(BaseModel):
     reference_number: Optional[str] = None
     confirmed_by: Optional[int] = None
     notes: Optional[str] = None
+
+    @field_validator("status")
+    @classmethod
+    def validar_status(cls, v: str) -> str:
+        if v not in PAYMENT_STATUSES:
+            raise ValueError(f"Status inválido: '{v}'. Permitidos: {', '.join(sorted(PAYMENT_STATUSES))}")
+        return v
 
 
 class PaymentResponse(PaymentBase):
