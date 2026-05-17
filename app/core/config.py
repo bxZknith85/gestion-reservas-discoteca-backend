@@ -12,10 +12,10 @@ class Settings(BaseSettings):
     PROJECT_DESCRIPTION: str = "Sistema backend para gestión de reservas en discotecas"
     VERSION: str = "1.0.0"
     
-    # Database - Supabase PostgreSQL
+    # Database - Supabase PostgreSQL (usando psycopg3)
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL",
-        "postgresql://postgres:password@localhost:5432/postgres"
+        "postgresql+psycopg://postgres:password@localhost:5432/postgres"
     )
     
     # JWT
