@@ -20,7 +20,7 @@ Sistema backend para la gestión de reservas en discotecas, desarrollado con **F
 
 ## 📋 Requisitos Previos
 
-- Python 3.11+
+- **Python 3.11 o 3.12** (⚠️ NO usar Python 3.14, ver [SETUP_PYTHON.md](SETUP_PYTHON.md))
 - PostgreSQL 16+ (via Supabase)
 - Docker y Docker Compose (opcional)
 - Cuenta en Supabase (https://supabase.com)
