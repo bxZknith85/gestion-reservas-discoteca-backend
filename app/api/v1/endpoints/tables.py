@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.schemas.table import DicoTableCreate, DicoTableResponse, DicoTableUpdate
-from app.crud import dico_table as crud_table
+from app.crud import table as crud_table
 
 router = APIRouter(prefix="/tables", tags=["tables"])
 
