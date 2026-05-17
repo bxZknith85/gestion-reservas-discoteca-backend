@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError, DataError
 
 from app.core.config import settings
 from app.db.database import Base, engine
@@ -45,6 +47,44 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# --- Global exception handlers ---
+
+@app.exception_handler(IntegrityError)
+async def integrity_error_handler(request: Request, exc: IntegrityError):
+    """Captura violaciones de integridad (unique, FK, CHECK) y devuelve 409."""
+    return JSONResponse(
+        status_code=409,
+        content={
+            "detail": "Conflicto: la operación viola una restricción de integridad en la base de datos.",
+            "error": str(exc.orig) if exc.orig else str(exc),
+        },
+    )
+
+
+@app.exception_handler(DataError)
+async def data_error_handler(request: Request, exc: DataError):
+    """Captura errores de datos (valor fuera de rango, tipo inválido) y devuelve 422."""
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": "Dato inválido para la base de datos.",
+            "error": str(exc.orig) if exc.orig else str(exc),
+        },
+    )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Captura cualquier otra excepción no manejada y devuelve 500."""
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": "Error interno del servidor.",
+            "error": str(exc),
+        },
+    )
 
 # Incluir routers
 app.include_router(users_router, prefix=settings.API_V1_STR)
