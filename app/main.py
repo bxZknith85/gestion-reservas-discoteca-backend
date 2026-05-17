@@ -8,6 +8,7 @@ from app.api.v1.endpoints import (
     events_router,
     tables_router,
     reservations_router,
+    tickets_router,
     orders_router,
 )
 
@@ -47,6 +48,7 @@ app.include_router(users_router, prefix=settings.API_V1_STR)
 app.include_router(events_router, prefix=settings.API_V1_STR)
 app.include_router(tables_router, prefix=settings.API_V1_STR)
 app.include_router(reservations_router, prefix=settings.API_V1_STR)
+app.include_router(tickets_router, prefix=settings.API_V1_STR)
 app.include_router(orders_router, prefix=settings.API_V1_STR)
 
 
