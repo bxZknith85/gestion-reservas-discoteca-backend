@@ -10,6 +10,12 @@ router = APIRouter(prefix="/table-prices", tags=["table-prices"])
 
 @router.post("/", response_model=TablePriceResponse, status_code=status.HTTP_201_CREATED)
 def crear(obj: TablePriceCreate, db: Session = Depends(get_db)):
+    existente = crud_table_price.obtener_por_mesa_evento(db, obj.table_id, obj.event_id)
+    if existente:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Ya existe un precio para la mesa {obj.table_id} en el evento {obj.event_id}"
+        )
     return crud_table_price.crear(db, obj)
 
 

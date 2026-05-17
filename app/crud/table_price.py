@@ -17,6 +17,13 @@ class CRUDTablePrice:
         return db.query(TablePrice).filter(TablePrice.id == id).first()
 
     @staticmethod
+    def obtener_por_mesa_evento(db: Session, table_id: int, event_id: int) -> TablePrice:
+        return db.query(TablePrice).filter(
+            TablePrice.table_id == table_id,
+            TablePrice.event_id == event_id
+        ).first()
+
+    @staticmethod
     def obtener_por_evento(db: Session, event_id: int) -> list[TablePrice]:
         return db.query(TablePrice).filter(TablePrice.event_id == event_id).all()
 
