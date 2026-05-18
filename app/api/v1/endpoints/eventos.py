@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.crud.evento import CRUDEvento
 from app.db.database import get_db
 from app.schemas.evento import EventoCreate, EventoResponse, EventoUpdate
-from app.crud.evento import CRUDEvento
 
 router = APIRouter(prefix="/eventos", tags=["eventos"])
 

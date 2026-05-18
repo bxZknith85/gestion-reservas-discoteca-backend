@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from app.models.usuario import Sala
 from app.schemas.sala import SalaCreate, SalaUpdate
 
@@ -11,15 +12,15 @@ class CRUDSala:
         db.commit()
         db.refresh(db_sala)
         return db_sala
-    
+
     @staticmethod
     def obtener_por_id(db: Session, sala_id: int) -> Sala:
         return db.query(Sala).filter(Sala.id == sala_id).first()
-    
+
     @staticmethod
     def obtener_todas(db: Session, skip: int = 0, limit: int = 100) -> list[Sala]:
         return db.query(Sala).offset(skip).limit(limit).all()
-    
+
     @staticmethod
     def actualizar(db: Session, sala_id: int, sala_update: SalaUpdate) -> Sala:
         db_sala = CRUDSala.obtener_por_id(db, sala_id)
@@ -31,7 +32,7 @@ class CRUDSala:
             db.commit()
             db.refresh(db_sala)
         return db_sala
-    
+
     @staticmethod
     def eliminar(db: Session, sala_id: int) -> bool:
         db_sala = CRUDSala.obtener_por_id(db, sala_id)

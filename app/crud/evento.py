@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from app.models.usuario import Evento
 from app.schemas.evento import EventoCreate, EventoUpdate
 
@@ -11,15 +12,15 @@ class CRUDEvento:
         db.commit()
         db.refresh(db_evento)
         return db_evento
-    
+
     @staticmethod
     def obtener_por_id(db: Session, evento_id: int) -> Evento:
         return db.query(Evento).filter(Evento.id == evento_id).first()
-    
+
     @staticmethod
     def obtener_todos(db: Session, skip: int = 0, limit: int = 100) -> list[Evento]:
         return db.query(Evento).offset(skip).limit(limit).all()
-    
+
     @staticmethod
     def actualizar(db: Session, evento_id: int, evento_update: EventoUpdate) -> Evento:
         db_evento = CRUDEvento.obtener_por_id(db, evento_id)
@@ -31,7 +32,7 @@ class CRUDEvento:
             db.commit()
             db.refresh(db_evento)
         return db_evento
-    
+
     @staticmethod
     def eliminar(db: Session, evento_id: int) -> bool:
         db_evento = CRUDEvento.obtener_por_id(db, evento_id)

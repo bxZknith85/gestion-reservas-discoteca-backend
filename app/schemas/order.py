@@ -1,8 +1,9 @@
 """Schemas Pydantic para órdenes"""
-from pydantic import BaseModel, Field, field_validator
-from typing import Optional
+
 from datetime import datetime
 from decimal import Decimal
+
+from pydantic import BaseModel, Field, field_validator
 
 ORDER_STATUSES = {"pending", "paid", "cancelled", "refunded"}
 
@@ -10,7 +11,7 @@ ORDER_STATUSES = {"pending", "paid", "cancelled", "refunded"}
 class OrderBase(BaseModel):
     user_id: int
     status: str = Field(default="pending")
-    notes: Optional[str] = None
+    notes: str | None = None
 
     @field_validator("status")
     @classmethod
@@ -25,9 +26,9 @@ class OrderCreate(OrderBase):
 
 
 class OrderUpdate(BaseModel):
-    status: Optional[str] = None
-    total: Optional[Decimal] = None
-    notes: Optional[str] = None
+    status: str | None = None
+    total: Decimal | None = None
+    notes: str | None = None
 
     @field_validator("status")
     @classmethod
@@ -43,6 +44,6 @@ class OrderResponse(OrderBase):
     total: Decimal
     created_at: datetime
     updated_at: datetime
-    
+
     class Config:
         from_attributes = True

@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from app.models.transactions import Ticket
 from app.schemas.ticket import TicketCreate, TicketUpdate
 

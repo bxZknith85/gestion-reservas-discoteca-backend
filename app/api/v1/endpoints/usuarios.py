@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.crud.usuario import CRUDUsuario
 from app.db.database import get_db
 from app.schemas.usuario import UsuarioCreate, UsuarioResponse, UsuarioUpdate
-from app.crud.usuario import CRUDUsuario
 
 router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
@@ -14,11 +14,11 @@ def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     usuario_existente = CRUDUsuario.obtener_por_email(db, usuario.email)
     if usuario_existente:
         raise HTTPException(status_code=400, detail="Email ya registrado")
-    
+
     usuario_existente = CRUDUsuario.obtener_por_username(db, usuario.username)
     if usuario_existente:
         raise HTTPException(status_code=400, detail="Username ya existe")
-    
+
     return CRUDUsuario.crear(db, usuario)
 
 

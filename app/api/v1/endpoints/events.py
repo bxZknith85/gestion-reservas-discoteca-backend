@@ -1,10 +1,11 @@
 """Endpoints para gestión de eventos"""
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.crud import event as crud_event
 from app.db.database import get_db
 from app.schemas.event import EventCreate, EventResponse, EventUpdate
-from app.crud import event as crud_event
 
 router = APIRouter(prefix="/events", tags=["events"])
 
@@ -20,10 +21,7 @@ def obtener_evento(event_id: int, db: Session = Depends(get_db)):
     """Obtener un evento por ID"""
     evento = crud_event.obtener_por_id(db, event_id)
     if not evento:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Evento no encontrado"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento no encontrado")
     return evento
 
 
@@ -38,10 +36,7 @@ def actualizar_evento(event_id: int, evento_update: EventUpdate, db: Session = D
     """Actualizar un evento"""
     evento = crud_event.actualizar(db, event_id, evento_update)
     if not evento:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Evento no encontrado"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento no encontrado")
     return evento
 
 
@@ -49,7 +44,4 @@ def actualizar_evento(event_id: int, evento_update: EventUpdate, db: Session = D
 def eliminar_evento(event_id: int, db: Session = Depends(get_db)):
     """Eliminar un evento"""
     if not crud_event.eliminar(db, event_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Evento no encontrado"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento no encontrado")

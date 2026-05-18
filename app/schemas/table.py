@@ -1,6 +1,6 @@
 """Schemas Pydantic para mesas"""
+
 from pydantic import BaseModel, Field
-from typing import Optional
 
 
 class DicoTableBase(BaseModel):
@@ -15,14 +15,14 @@ class DicoTableCreate(DicoTableBase):
 
 
 class DicoTableUpdate(BaseModel):
-    number: Optional[int] = None
-    table_type_id: Optional[int] = None
-    capacity: Optional[int] = None
-    table_state_id: Optional[int] = None
+    number: int | None = None
+    table_type_id: int | None = None
+    capacity: int | None = None
+    table_state_id: int | None = None
 
 
 class DicoTableResponse(DicoTableBase):
     id: int
-    
+
     class Config:
         from_attributes = True

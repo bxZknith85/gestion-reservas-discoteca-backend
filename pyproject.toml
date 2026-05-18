@@ -13,3 +13,15 @@ authors = [{name = "Tu Nombre", email = "tu.email@example.com"}]
 
 [project.urls]
 Repository = "https://github.com/bxZknith85/gestion-reservas-discoteca-backend"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+exclude = ["migrations", ".venv", "venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG", "RUF100"]
+ignore = ["B008"]  # FastAPI usa Depends() en argumentos por defecto
+
+[tool.ruff.format]
+quote-style = "double"

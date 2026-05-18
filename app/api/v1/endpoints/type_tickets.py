@@ -1,9 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.database import get_db
-from app.schemas.type_ticket import TypeTicketCreate, TypeTicketResponse, TypeTicketUpdate
 from app.crud import type_ticket as crud_type_ticket
+from app.db.database import get_db
+from app.schemas.type_ticket import (
+    TypeTicketCreate,
+    TypeTicketResponse,
+    TypeTicketUpdate,
+)
 
 router = APIRouter(prefix="/type-tickets", tags=["type-tickets"])
 

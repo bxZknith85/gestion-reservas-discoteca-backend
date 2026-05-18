@@ -1,9 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.database import get_db
-from app.schemas.table_price import TablePriceCreate, TablePriceResponse, TablePriceUpdate
 from app.crud import table_price as crud_table_price
+from app.db.database import get_db
+from app.schemas.table_price import (
+    TablePriceCreate,
+    TablePriceResponse,
+    TablePriceUpdate,
+)
 
 router = APIRouter(prefix="/table-prices", tags=["table-prices"])
 
@@ -14,7 +18,7 @@ def crear(obj: TablePriceCreate, db: Session = Depends(get_db)):
     if existente:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Ya existe un precio para la mesa {obj.table_id} en el evento {obj.event_id}"
+            detail=f"Ya existe un precio para la mesa {obj.table_id} en el evento {obj.event_id}",
         )
     return crud_table_price.crear(db, obj)
 

@@ -1,31 +1,22 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy.exc import IntegrityError, DataError
+from sqlalchemy.exc import DataError, IntegrityError
 
-from app.core.config import settings
-from app.db.database import Base, engine
 from app.api.v1.endpoints import (
-    users_router,
     events_router,
-    tables_router,
-    type_tickets_router,
-    table_prices_router,
-    reservations_router,
-    tickets_router,
-    orders_router,
     order_details_router,
+    orders_router,
+    reservations_router,
+    table_prices_router,
+    tables_router,
+    tickets_router,
+    type_tickets_router,
+    users_router,
 )
+from app.core.config import settings
 
 # Importar todos los modelos para que SQLAlchemy los registre
-from app.models import (
-    TypeUser, EventState, ReservationState, TableState,
-    TableType, TicketState, PaymentMethod, OrderStatus,
-    User, Event, DicoTable, TypeTicket, TablePrice,
-    Order, Reservation, Ticket, OrderDetail, Payment,
-    AuditLog,
-    AdminActionLog, AppConfig,
-)
 
 # Nota: Las tablas ya existen en Supabase (ejecutadas desde schema_db.sql)
 # No crear tablas automáticamente al startup con NullPool
@@ -51,8 +42,9 @@ app.add_middleware(
 
 # --- Global exception handlers ---
 
+
 @app.exception_handler(IntegrityError)
-async def integrity_error_handler(request: Request, exc: IntegrityError):
+async def integrity_error_handler(_request: Request, exc: IntegrityError):
     """Captura violaciones de integridad (unique, FK, CHECK) y devuelve 409."""
     return JSONResponse(
         status_code=409,
@@ -64,7 +56,7 @@ async def integrity_error_handler(request: Request, exc: IntegrityError):
 
 
 @app.exception_handler(DataError)
-async def data_error_handler(request: Request, exc: DataError):
+async def data_error_handler(_request: Request, exc: DataError):
     """Captura errores de datos (valor fuera de rango, tipo inválido) y devuelve 422."""
     return JSONResponse(
         status_code=422,
@@ -76,7 +68,7 @@ async def data_error_handler(request: Request, exc: DataError):
 
 
 @app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
+async def global_exception_handler(_request: Request, exc: Exception):
     """Captura cualquier otra excepción no manejada y devuelve 500."""
     return JSONResponse(
         status_code=500,
@@ -85,6 +77,7 @@ async def global_exception_handler(request: Request, exc: Exception):
             "error": str(exc),
         },
     )
+
 
 # Incluir routers
 app.include_router(users_router, prefix=settings.API_V1_STR)

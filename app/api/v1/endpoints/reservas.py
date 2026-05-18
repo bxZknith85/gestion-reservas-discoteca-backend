@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.crud.reserva import CRUDReserva
 from app.db.database import get_db
 from app.schemas.reserva import ReservaCreate, ReservaResponse, ReservaUpdate
-from app.crud.reserva import CRUDReserva
 
 router = APIRouter(prefix="/reservas", tags=["reservas"])
 

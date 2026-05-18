@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field
-from typing import Optional
 from datetime import datetime
+
+from pydantic import BaseModel, Field
 
 
 class ReservaBase(BaseModel):
@@ -9,7 +9,7 @@ class ReservaBase(BaseModel):
     sala_id: int
     numero_personas: int = Field(..., gt=0)
     fecha_reserva: datetime
-    notas: Optional[str] = None
+    notas: str | None = None
 
 
 class ReservaCreate(ReservaBase):
@@ -17,16 +17,16 @@ class ReservaCreate(ReservaBase):
 
 
 class ReservaUpdate(BaseModel):
-    numero_personas: Optional[int] = None
-    estado: Optional[str] = None
-    notas: Optional[str] = None
+    numero_personas: int | None = None
+    estado: str | None = None
+    notas: str | None = None
 
 
 class ReservaResponse(ReservaBase):
     id: int
     estado: str
-    monto_total: Optional[float]
+    monto_total: float | None
     fecha_creacion: datetime
-    
+
     class Config:
         from_attributes = True

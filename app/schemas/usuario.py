@@ -1,6 +1,6 @@
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
 from datetime import datetime
+
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UsuarioBase(BaseModel):
@@ -15,16 +15,16 @@ class UsuarioCreate(UsuarioBase):
 
 
 class UsuarioUpdate(BaseModel):
-    phone_number: Optional[str] = None
-    is_active: Optional[bool] = None
+    phone_number: str | None = None
+    is_active: bool | None = None
 
 
 class UsuarioResponse(UsuarioBase):
     id: int
     is_active: bool
-    fcm_token: Optional[str] = None
+    fcm_token: str | None = None
     created_at: datetime
     updated_at: datetime
-    
+
     class Config:
         from_attributes = True

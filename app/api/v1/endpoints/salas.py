@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.crud.sala import CRUDSala
 from app.db.database import get_db
 from app.schemas.sala import SalaCreate, SalaResponse, SalaUpdate
-from app.crud.sala import CRUDSala
 
 router = APIRouter(prefix="/salas", tags=["salas"])
 

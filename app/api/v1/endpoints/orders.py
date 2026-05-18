@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.crud import order as crud_order
+from app.crud import payment as crud_payment
 from app.db.database import get_db
 from app.schemas.order import OrderCreate, OrderResponse, OrderUpdate
 from app.schemas.payment import PaymentCreate, PaymentResponse, PaymentUpdate
-from app.crud import order as crud_order
-from app.crud import payment as crud_payment
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
@@ -48,7 +48,7 @@ def eliminar(id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/{order_id}/payments/", response_model=PaymentResponse, status_code=status.HTTP_201_CREATED)
-def crear_pago(order_id: int, obj: PaymentCreate, db: Session = Depends(get_db)):
+def crear_pago(_order_id: int, obj: PaymentCreate, db: Session = Depends(get_db)):
     return crud_payment.crear(db, obj)
 
 

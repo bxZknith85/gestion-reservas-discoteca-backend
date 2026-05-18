@@ -1,10 +1,15 @@
 """Endpoints para gestión de reservas"""
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.database import get_db
-from app.schemas.reservation import ReservationCreate, ReservationResponse, ReservationUpdate
 from app.crud import reservation as crud_reservation
+from app.db.database import get_db
+from app.schemas.reservation import (
+    ReservationCreate,
+    ReservationResponse,
+    ReservationUpdate,
+)
 
 router = APIRouter(prefix="/reservations", tags=["reservations"])
 
@@ -20,10 +25,7 @@ def obtener_reserva(reservation_id: int, db: Session = Depends(get_db)):
     """Obtener una reserva por ID"""
     reserva = crud_reservation.obtener_por_id(db, reservation_id)
     if not reserva:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Reserva no encontrada"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reserva no encontrada")
     return reserva
 
 
@@ -44,10 +46,7 @@ def actualizar_reserva(reservation_id: int, reserva_update: ReservationUpdate, d
     """Actualizar una reserva"""
     reserva = crud_reservation.actualizar(db, reservation_id, reserva_update)
     if not reserva:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Reserva no encontrada"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reserva no encontrada")
     return reserva
 
 
@@ -55,7 +54,4 @@ def actualizar_reserva(reservation_id: int, reserva_update: ReservationUpdate, d
 def eliminar_reserva(reservation_id: int, db: Session = Depends(get_db)):
     """Eliminar una reserva"""
     if not crud_reservation.eliminar(db, reservation_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Reserva no encontrada"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reserva no encontrada")

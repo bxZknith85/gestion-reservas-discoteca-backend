@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from app.models.core import TablePrice
 from app.schemas.table_price import TablePriceCreate, TablePriceUpdate
 
@@ -18,10 +19,7 @@ class CRUDTablePrice:
 
     @staticmethod
     def obtener_por_mesa_evento(db: Session, table_id: int, event_id: int) -> TablePrice:
-        return db.query(TablePrice).filter(
-            TablePrice.table_id == table_id,
-            TablePrice.event_id == event_id
-        ).first()
+        return db.query(TablePrice).filter(TablePrice.table_id == table_id, TablePrice.event_id == event_id).first()
 
     @staticmethod
     def obtener_por_evento(db: Session, event_id: int) -> list[TablePrice]:

@@ -1,7 +1,8 @@
 """Schemas Pydantic para precios de mesa"""
-from pydantic import BaseModel, Field
-from typing import Optional
+
 from decimal import Decimal
+
+from pydantic import BaseModel, Field
 
 
 class TablePriceBase(BaseModel):
@@ -15,11 +16,11 @@ class TablePriceCreate(TablePriceBase):
 
 
 class TablePriceUpdate(BaseModel):
-    price: Optional[Decimal] = None
+    price: Decimal | None = None
 
 
 class TablePriceResponse(TablePriceBase):
     id: int
-    
+
     class Config:
         from_attributes = True

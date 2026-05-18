@@ -1,11 +1,11 @@
-from pydantic import BaseModel, Field
-from typing import Optional
 from datetime import datetime
+
+from pydantic import BaseModel, Field
 
 
 class EventoBase(BaseModel):
     nombre: str = Field(..., min_length=1, max_length=255)
-    descripcion: Optional[str] = None
+    descripcion: str | None = None
     sala_id: int
     fecha_inicio: datetime
     fecha_fin: datetime
@@ -18,18 +18,18 @@ class EventoCreate(EventoBase):
 
 
 class EventoUpdate(BaseModel):
-    nombre: Optional[str] = None
-    descripcion: Optional[str] = None
-    fecha_inicio: Optional[datetime] = None
-    fecha_fin: Optional[datetime] = None
-    precio_entrada: Optional[float] = None
-    capacidad_disponible: Optional[int] = None
+    nombre: str | None = None
+    descripcion: str | None = None
+    fecha_inicio: datetime | None = None
+    fecha_fin: datetime | None = None
+    precio_entrada: float | None = None
+    capacidad_disponible: int | None = None
 
 
 class EventoResponse(EventoBase):
     id: int
     activo: bool
     fecha_creacion: datetime
-    
+
     class Config:
         from_attributes = True

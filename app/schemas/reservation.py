@@ -1,15 +1,16 @@
 """Schemas Pydantic para reservas"""
-from pydantic import BaseModel, Field
-from typing import Optional
+
 from datetime import datetime
+
+from pydantic import BaseModel
 
 
 class ReservationBase(BaseModel):
     reservation_state_id: int
     user_id: int
     table_id: int
-    event_id: Optional[int] = None
-    expires_at: Optional[datetime] = None
+    event_id: int | None = None
+    expires_at: datetime | None = None
 
 
 class ReservationCreate(ReservationBase):
@@ -17,8 +18,8 @@ class ReservationCreate(ReservationBase):
 
 
 class ReservationUpdate(BaseModel):
-    reservation_state_id: Optional[int] = None
-    expires_at: Optional[datetime] = None
+    reservation_state_id: int | None = None
+    expires_at: datetime | None = None
 
 
 class ReservationResponse(ReservationBase):
@@ -26,6 +27,6 @@ class ReservationResponse(ReservationBase):
     reserved_at: datetime
     created_at: datetime
     updated_at: datetime
-    
+
     class Config:
         from_attributes = True

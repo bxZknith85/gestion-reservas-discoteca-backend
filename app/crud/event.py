@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from app.models.core import Event
 from app.schemas.event import EventCreate, EventUpdate
 

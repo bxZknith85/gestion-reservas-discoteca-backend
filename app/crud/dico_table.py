@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from app.models.core import DicoTable
 from app.schemas.table import DicoTableCreate, DicoTableUpdate
 

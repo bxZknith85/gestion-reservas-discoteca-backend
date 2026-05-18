@@ -1,18 +1,18 @@
 """Modelos SQLAlchemy - Schema: transactions (Flujo de compra)"""
-from sqlalchemy import Column, Integer, String, Text, DateTime, Numeric, ForeignKey
+
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from datetime import datetime
+
 from app.db.database import Base
 
 
 class Order(Base):
     """Tabla de órdenes/pedidos"""
+
     __tablename__ = "orders"
-    __table_args__ = (
-        {"schema": "transactions"},
-    )
-    
+    __table_args__ = ({"schema": "transactions"},)
+
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("core.users.id"), nullable=False)
     ordered_at = Column(DateTime, default=func.now(), nullable=False)
@@ -21,7 +21,7 @@ class Order(Base):
     notes = Column(Text, nullable=True)
     created_at = Column(DateTime, default=func.now(), nullable=False)
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
-    
+
     # Relaciones
     user = relationship("User", back_populates="orders")
     order_details = relationship("OrderDetail", back_populates="order")
@@ -30,11 +30,10 @@ class Order(Base):
 
 class Reservation(Base):
     """Tabla de reservas"""
+
     __tablename__ = "reservations"
-    __table_args__ = (
-        {"schema": "transactions"},
-    )
-    
+    __table_args__ = ({"schema": "transactions"},)
+
     id = Column(Integer, primary_key=True)
     reservation_state_id = Column(Integer, ForeignKey("catalog.reservation_states.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("core.users.id"), nullable=False)
@@ -44,7 +43,7 @@ class Reservation(Base):
     expires_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=func.now(), nullable=False)
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
-    
+
     # Relaciones
     user = relationship("User", back_populates="reservations")
     table = relationship("DicoTable", back_populates="reservations")
@@ -54,18 +53,17 @@ class Reservation(Base):
 
 class Ticket(Base):
     """Tabla de tickets/entradas compradas"""
+
     __tablename__ = "tickets"
-    __table_args__ = (
-        {"schema": "transactions"},
-    )
-    
+    __table_args__ = ({"schema": "transactions"},)
+
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("core.users.id"), nullable=False)
     type_ticket_id = Column(Integer, ForeignKey("core.type_tickets.id"), nullable=False)
     ticket_state_id = Column(Integer, ForeignKey("catalog.ticket_states.id"), nullable=False)
     created_at = Column(DateTime, default=func.now(), nullable=False)
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
-    
+
     # Relaciones
     user = relationship("User", back_populates="tickets")
     type_ticket = relationship("TypeTicket", back_populates="tickets")
@@ -74,11 +72,10 @@ class Ticket(Base):
 
 class OrderDetail(Base):
     """Detalles de cada orden (tickets y/o reservas)"""
+
     __tablename__ = "order_details"
-    __table_args__ = (
-        {"schema": "transactions"},
-    )
-    
+    __table_args__ = ({"schema": "transactions"},)
+
     id = Column(Integer, primary_key=True)
     order_id = Column(Integer, ForeignKey("transactions.orders.id"), nullable=False)
     ticket_id = Column(Integer, ForeignKey("transactions.tickets.id"), nullable=True)
@@ -88,7 +85,7 @@ class OrderDetail(Base):
     quantity = Column(Integer, default=1, nullable=False)
     unit_price = Column(Numeric(10, 2), nullable=False)
     discount = Column(Numeric(10, 2), default=0, nullable=False)
-    
+
     # Relaciones
     order = relationship("Order", back_populates="order_details")
     ticket = relationship("Ticket", back_populates="order_details")
@@ -97,11 +94,10 @@ class OrderDetail(Base):
 
 class Payment(Base):
     """Tabla de pagos"""
+
     __tablename__ = "payments"
-    __table_args__ = (
-        {"schema": "transactions"},
-    )
-    
+    __table_args__ = ({"schema": "transactions"},)
+
     id = Column(Integer, primary_key=True)
     order_id = Column(Integer, ForeignKey("transactions.orders.id"), nullable=False)
     payment_method_id = Column(Integer, ForeignKey("catalog.payment_methods.id"), nullable=False)
@@ -113,7 +109,7 @@ class Payment(Base):
     confirmed_at = Column(DateTime, nullable=True)
     notes = Column(Text, nullable=True)
     created_at = Column(DateTime, default=func.now(), nullable=False)
-    
+
     # Relaciones
     order = relationship("Order", back_populates="payments")
     confirmed_by_user = relationship("User", back_populates="payments_confirmed", foreign_keys=[confirmed_by])

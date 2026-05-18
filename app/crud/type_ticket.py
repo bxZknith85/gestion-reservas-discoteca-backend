@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from app.models.core import TypeTicket
 from app.schemas.type_ticket import TypeTicketCreate, TypeTicketUpdate
 

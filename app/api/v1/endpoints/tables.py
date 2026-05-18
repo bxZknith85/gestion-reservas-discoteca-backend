@@ -1,10 +1,11 @@
 """Endpoints para gestión de mesas"""
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.crud import table as crud_table
 from app.db.database import get_db
 from app.schemas.table import DicoTableCreate, DicoTableResponse, DicoTableUpdate
-from app.crud import table as crud_table
 
 router = APIRouter(prefix="/tables", tags=["tables"])
 
@@ -14,8 +15,7 @@ def crear_mesa(mesa: DicoTableCreate, db: Session = Depends(get_db)):
     """Crear una nueva mesa"""
     if crud_table.obtener_por_numero(db, mesa.number):
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"Ya existe una mesa con el número {mesa.number}"
+            status_code=status.HTTP_409_CONFLICT, detail=f"Ya existe una mesa con el número {mesa.number}"
         )
     return crud_table.crear(db, mesa)
 
@@ -25,10 +25,7 @@ def obtener_mesa(table_id: int, db: Session = Depends(get_db)):
     """Obtener una mesa por ID"""
     mesa = crud_table.obtener_por_id(db, table_id)
     if not mesa:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Mesa no encontrada"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Mesa no encontrada")
     return mesa
 
 
@@ -43,10 +40,7 @@ def actualizar_mesa(table_id: int, mesa_update: DicoTableUpdate, db: Session = D
     """Actualizar una mesa"""
     mesa = crud_table.actualizar(db, table_id, mesa_update)
     if not mesa:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Mesa no encontrada"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Mesa no encontrada")
     return mesa
 
 
@@ -54,7 +48,4 @@ def actualizar_mesa(table_id: int, mesa_update: DicoTableUpdate, db: Session = D
 def eliminar_mesa(table_id: int, db: Session = Depends(get_db)):
     """Eliminar una mesa"""
     if not crud_table.eliminar(db, table_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Mesa no encontrada"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Mesa no encontrada")

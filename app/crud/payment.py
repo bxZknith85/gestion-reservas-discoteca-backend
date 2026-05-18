@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from app.models.transactions import Payment
 from app.schemas.payment import PaymentCreate, PaymentUpdate
 
@@ -22,7 +23,7 @@ class CRUDPayment:
 
     @staticmethod
     def obtener_pendientes(db: Session, skip: int = 0, limit: int = 100) -> list[Payment]:
-        return db.query(Payment).filter(Payment.status == 'pending').offset(skip).limit(limit).all()
+        return db.query(Payment).filter(Payment.status == "pending").offset(skip).limit(limit).all()
 
     @staticmethod
     def obtener_todos(db: Session, skip: int = 0, limit: int = 100) -> list[Payment]:

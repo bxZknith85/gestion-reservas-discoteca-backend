@@ -1,7 +1,8 @@
 """Schemas Pydantic para usuarios"""
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
+
 from datetime import datetime
+
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UserBase(BaseModel):
@@ -17,18 +18,18 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(BaseModel):
-    username: Optional[str] = None
-    email: Optional[EmailStr] = None
-    phone_number: Optional[str] = None
-    fcm_token: Optional[str] = None
-    is_active: Optional[bool] = None
+    username: str | None = None
+    email: EmailStr | None = None
+    phone_number: str | None = None
+    fcm_token: str | None = None
+    is_active: bool | None = None
 
 
 class UserResponse(UserBase):
     id: int
-    fcm_token: Optional[str]
+    fcm_token: str | None
     created_at: datetime
     updated_at: datetime
-    
+
     class Config:
         from_attributes = True
