@@ -44,6 +44,7 @@ env/
 htmlcov/
 .tox/
 test.db
+test_tmp.db
 
 # Alembic
 # migrations/versions/  # Los version files se commitean

@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import DataError, IntegrityError
 
 from app.api.v1.endpoints import (
+    auth_router,
     events_router,
     order_details_router,
     orders_router,
@@ -80,6 +81,7 @@ async def global_exception_handler(_request: Request, exc: Exception):
 
 
 # Incluir routers
+app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(users_router, prefix=settings.API_V1_STR)
 app.include_router(events_router, prefix=settings.API_V1_STR)
 app.include_router(tables_router, prefix=settings.API_V1_STR)

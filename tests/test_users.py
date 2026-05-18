@@ -15,17 +15,20 @@ USER_UPDATE = {
     "is_active": False,
 }
 
+_user_id = None
+
 
 class TestCreateUser:
     def test_crear_usuario(self, client):
+        global _user_id
         response = client.post(BASE + "/", json=USER_DATA)
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
         assert data["email"] == USER_DATA["email"]
         assert data["username"] == USER_DATA["username"]
         assert data["phone_number"] == USER_DATA["phone_number"]
-        assert "id" in data
         assert data["is_active"] is True
+        _user_id = data["id"]
 
     def test_crear_usuario_email_duplicado(self, client):
         response = client.post(BASE + "/", json=USER_DATA)
@@ -45,10 +48,10 @@ class TestCreateUser:
 
 class TestGetUser:
     def test_obtener_usuario(self, client):
-        response = client.get(f"{BASE}/1")
+        response = client.get(f"{BASE}/{_user_id}")
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        assert data["id"] == 1
+        assert data["id"] == _user_id
         assert data["email"] == USER_DATA["email"]
 
     def test_obtener_usuario_no_existente(self, client):
@@ -74,7 +77,7 @@ class TestListUsers:
 
 class TestUpdateUser:
     def test_actualizar_usuario(self, client):
-        response = client.put(f"{BASE}/1", json=USER_UPDATE)
+        response = client.put(f"{BASE}/{_user_id}", json=USER_UPDATE)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["phone_number"] == USER_UPDATE["phone_number"]
@@ -88,7 +91,7 @@ class TestUpdateUser:
 
 class TestDeleteUser:
     def test_eliminar_usuario(self, client):
-        response = client.delete(f"{BASE}/1")
+        response = client.delete(f"{BASE}/{_user_id}")
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_eliminar_usuario_no_existente(self, client):

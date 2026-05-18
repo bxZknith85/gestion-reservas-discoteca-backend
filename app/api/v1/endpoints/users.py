@@ -3,6 +3,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.api.v1.endpoints.auth import get_current_user
 from app.crud.usuario import CRUDUsuario
 from app.db.database import get_db
 from app.schemas.usuario import UsuarioCreate, UsuarioResponse, UsuarioUpdate
@@ -18,6 +19,11 @@ def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     if CRUDUsuario.obtener_por_telefono(db, usuario.phone_number):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Teléfono ya registrado")
     return CRUDUsuario.crear(db, usuario)
+
+
+@router.get("/me", response_model=UsuarioResponse)
+def obtener_usuario_actual(usuario: UsuarioResponse = Depends(get_current_user)):
+    return usuario
 
 
 @router.get("/{user_id}", response_model=UsuarioResponse)
