@@ -1,228 +1,217 @@
-# Gestión de Reservas de Discoteca - Backend
+# Gestión de Reservas de Discoteca — Backend
 
-Sistema backend para la gestión de reservas en discotecas, desarrollado con **FastAPI** y **PostgreSQL**.
+API RESTful para la gestión de reservas en discotecas, construida con **FastAPI** y **PostgreSQL (Neon)**.
 
-## 🚀 Características
+## Características
 
-- ✅ API RESTful con FastAPI
-- ✅ Autenticación con JWT
-- ✅ Base de datos PostgreSQL
-- ✅ Modelos para: Usuarios, Salas, Eventos, Reservas
-- ✅ CRUD completo para cada entidad
-- ✅ Dockerizado
-- ✅ Tests unitarios
-- ✅ Validación de datos con Pydantic
+- API RESTful con FastAPI
+- Autenticación JWT (Bearer token)
+- PostgreSQL en producción (Neon), SQLite en tests
+- Alembic para migraciones
+- 22 tablas en 5 esquemas (catalog, core, transactions, audit, system)
+- 108 tests automatizados
+- CI/CD con GitHub Actions (ruff + pytest)
+- Ruff como linter/formatter
 
-## 📋 Requisitos Previos
+## Stack
+
+| Capa       | Tecnología                         |
+| ---------- | ---------------------------------- |
+| Framework  | FastAPI 0.109                      |
+| ORM        | SQLAlchemy 2.0                     |
+| DB (prod)  | PostgreSQL 16 (Neon)               |
+| DB (test)  | SQLite                             |
+| Migraciones| Alembic 1.13                       |
+| Auth       | JWT (python-jose + passlib/bcrypt) |
+| Linter     | Ruff 0.3                           |
+| Tests      | pytest 7.4 + pytest-cov            |
+| CI/CD      | GitHub Actions                     |
+
+## Requisitos
 
 - Python 3.11+
-- PostgreSQL 12+
-- Docker y Docker Compose (opcional)
+- PostgreSQL 12+ (solo para desarrollo local)
 
-## 🔧 Instalación
-
-### 1. Clonar el repositorio
+## Instalación
 
 ```bash
 git clone https://github.com/bxZknith85/gestion-reservas-discoteca-backend.git
 cd gestion-reservas-discoteca-backend
-```
 
-### 2. Crear entorno virtual
-
-```bash
 python -m venv venv
+venv\Scripts\activate      # Windows
+source venv/bin/activate   # Linux/Mac
 
-# En Windows
-venv\Scripts\activate
-
-# En macOS/Linux
-source venv/bin/activate
-```
-
-### 3. Instalar dependencias
-
-```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configurar variables de entorno
+## Configuración
 
-```bash
-cp .env.example .env
-```
-
-Edita el archivo `.env` con tus configuraciones:
+Copia `.env.example` a `.env` y edita:
 
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/gestion_reservas
-SECRET_KEY=your-secret-key-here
+DATABASE_URL=postgresql+psycopg://user:password@host:5432/neondb?sslmode=require
+SECRET_KEY=your-secret-key
 DEBUG=True
 ENVIRONMENT=development
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+API_V1_STR=/api/v1
+PROJECT_NAME="Gestión de Reservas - Discoteca"
 ```
 
-### 5. Crear base de datos
-
-```bash
-# Usando PostgreSQL
-createdb -U postgres gestion_reservas
-```
-
-## 🚀 Uso
-
-### Ejecutar servidor de desarrollo
+## Ejecutar
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-El servidor estará disponible en `http://localhost:8000`
+Documentación interactiva en `http://localhost:8000/docs`.
 
-### Documentación interactiva
-
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-
-## 🐳 Docker
-
-### Ejecutar con Docker Compose
+## Tests
 
 ```bash
-docker-compose up -d
+pytest                       # 108 tests
+pytest -q --tb=line          # modo compacto
+pytest --cov=app             # con cobertura
 ```
 
-Esto iniciará:
-- PostgreSQL en puerto 5432
-- Backend en puerto 8000
+Los tests usan SQLite (`test.db`) que se regenera automáticamente al iniciar.
 
-### Detener servicios
+## Migraciones
 
 ```bash
-docker-compose down
+alembic revision --autogenerate -m "descripcion"
+alembic upgrade head
 ```
 
-## 📁 Estructura del Proyecto
+## Estructura del proyecto
 
 ```
-gestion-reservas-discoteca-backend/
-├── app/
-│   ├── api/
-│   │   └── v1/
-│   │       └── endpoints/
-│   │           ├── usuarios.py
-│   │           ├── salas.py
-│   │           ├── eventos.py
-│   │           └── reservas.py
-│   ├── core/
-│   │   ├── config.py
-│   │   ├── security.py
-│   │   └── constants.py
-│   ├── models/
-│   │   ├── usuario.py (contiene todos los modelos)
-│   │   └── base.py
-│   ├── schemas/
-│   │   ├── usuario.py
-│   │   ├── sala.py
-│   │   ├── evento.py
-│   │   └── reserva.py
-│   ├── crud/
-│   │   ├── usuario.py
-│   │   ├── sala.py
-│   │   ├── evento.py
-│   │   └── reserva.py
-│   ├── db/
-│   │   └── database.py
-│   ├── services/
-│   └── main.py
-├── tests/
-│   ├── conftest.py
-│   └── test_health.py
-├── migrations/
-├── requirements.txt
-├── .env.example
-├── .gitignore
-├── Dockerfile
-├── docker-compose.yml
-├── pyproject.toml
-└── README.md
+app/
+├── api/v1/endpoints/     # auth, events, orders, order_details,
+│                         # reservations, tables, table_prices,
+│                         # tickets, type_tickets, users
+├── core/                 # config, security
+├── crud/                 # lógica de acceso a datos
+├── db/                   # database (engine, session)
+├── models/               # catalog, core, transactions, audit, system
+├── schemas/              # pydantic models
+└── main.py
+
+tests/                    # 9 archivos, 108 tests
+migrations/versions/      # migraciones Alembic
+.github/workflows/        # CI (ruff + pytest)
 ```
 
-## 🔌 Endpoints Principales
+## Endpoints
+
+### Auth
+| Método | Ruta                  | Auth | Descripción         |
+| ------ | --------------------- | ---- | ------------------- |
+| POST   | `/api/v1/auth/login`  | No   | Iniciar sesión      |
 
 ### Usuarios
-- `POST /api/v1/usuarios/` - Crear usuario
-- `GET /api/v1/usuarios/` - Listar usuarios
-- `GET /api/v1/usuarios/{id}` - Obtener usuario
-- `PUT /api/v1/usuarios/{id}` - Actualizar usuario
-- `DELETE /api/v1/usuarios/{id}` - Eliminar usuario
-
-### Salas
-- `POST /api/v1/salas/` - Crear sala
-- `GET /api/v1/salas/` - Listar salas
-- `GET /api/v1/salas/{id}` - Obtener sala
-- `PUT /api/v1/salas/{id}` - Actualizar sala
-- `DELETE /api/v1/salas/{id}` - Eliminar sala
+| Método | Ruta                        | Auth | Descripción            |
+| ------ | ----------------------------| ---- | ---------------------- |
+| POST   | `/api/v1/users/`            | No   | Registrar usuario      |
+| GET    | `/api/v1/users/me`          | Sí   | Perfil actual          |
+| GET    | `/api/v1/users/{id}`        | Sí   | Obtener usuario        |
+| GET    | `/api/v1/users/`            | Sí   | Listar usuarios        |
+| PUT    | `/api/v1/users/{id}`        | Sí   | Actualizar usuario     |
+| DELETE | `/api/v1/users/{id}`        | Sí   | Eliminar usuario       |
 
 ### Eventos
-- `POST /api/v1/eventos/` - Crear evento
-- `GET /api/v1/eventos/` - Listar eventos
-- `GET /api/v1/eventos/{id}` - Obtener evento
-- `PUT /api/v1/eventos/{id}` - Actualizar evento
-- `DELETE /api/v1/eventos/{id}` - Eliminar evento
+| Método | Ruta                        | Auth | Descripción            |
+| ------ | ----------------------------| ---- | ---------------------- |
+| GET    | `/api/v1/events/`           | No   | Listar eventos         |
+| GET    | `/api/v1/events/{id}`       | No   | Obtener evento         |
+| POST   | `/api/v1/events/`           | Sí   | Crear evento           |
+| PUT    | `/api/v1/events/{id}`       | Sí   | Actualizar evento      |
+| DELETE | `/api/v1/events/{id}`       | Sí   | Eliminar evento        |
+
+### Mesas
+| Método | Ruta                        | Auth | Descripción            |
+| ------ | ----------------------------| ---- | ---------------------- |
+| GET    | `/api/v1/tables/`           | Sí   | Listar mesas           |
+| GET    | `/api/v1/tables/{id}`       | Sí   | Obtener mesa           |
+| POST   | `/api/v1/tables/`           | Sí   | Crear mesa             |
+| PUT    | `/api/v1/tables/{id}`       | Sí   | Actualizar mesa        |
+| DELETE | `/api/v1/tables/{id}`       | Sí   | Eliminar mesa          |
+
+### Precios de mesa
+| Método | Ruta                               | Auth | Descripción                  |
+| ------ | -----------------------------------| ---- | ---------------------------- |
+| GET    | `/api/v1/table-prices/`            | Sí   | Listar precios               |
+| GET    | `/api/v1/table-prices/{id}`        | Sí   | Obtener precio               |
+| GET    | `/api/v1/table-prices/event/{id}`  | Sí   | Precios por evento           |
+| GET    | `/api/v1/table-prices/table/{id}`  | Sí   | Precios por mesa             |
+| POST   | `/api/v1/table-prices/`            | Sí   | Crear precio                 |
+| PUT    | `/api/v1/table-prices/{id}`        | Sí   | Actualizar precio            |
+| DELETE | `/api/v1/table-prices/{id}`        | Sí   | Eliminar precio              |
+
+### Tipos de ticket
+| Método | Ruta                               | Auth | Descripción                  |
+| ------ | -----------------------------------| ---- | ---------------------------- |
+| GET    | `/api/v1/type-tickets/`            | Sí   | Listar tipos                 |
+| GET    | `/api/v1/type-tickets/{id}`        | Sí   | Obtener tipo                 |
+| GET    | `/api/v1/type-tickets/event/{id}`  | Sí   | Tipos por evento             |
+| POST   | `/api/v1/type-tickets/`            | Sí   | Crear tipo                   |
+| PUT    | `/api/v1/type-tickets/{id}`        | Sí   | Actualizar tipo              |
+| DELETE | `/api/v1/type-tickets/{id}`        | Sí   | Eliminar tipo                |
 
 ### Reservas
-- `POST /api/v1/reservas/` - Crear reserva
-- `GET /api/v1/reservas/` - Listar reservas
-- `GET /api/v1/reservas/{id}` - Obtener reserva
-- `GET /api/v1/reservas/usuario/{usuario_id}` - Listar reservas de usuario
-- `PUT /api/v1/reservas/{id}` - Actualizar reserva
-- `DELETE /api/v1/reservas/{id}` - Eliminar reserva
+| Método | Ruta                               | Auth | Descripción                  |
+| ------ | -----------------------------------| ---- | ---------------------------- |
+| GET    | `/api/v1/reservations/`            | Sí   | Listar reservas              |
+| GET    | `/api/v1/reservations/{id}`        | Sí   | Obtener reserva              |
+| GET    | `/api/v1/reservations/user/{id}`   | Sí   | Reservas de usuario          |
+| POST   | `/api/v1/reservations/`            | Sí   | Crear reserva                |
+| PUT    | `/api/v1/reservations/{id}`        | Sí   | Actualizar reserva           |
+| DELETE | `/api/v1/reservations/{id}`        | Sí   | Eliminar reserva             |
 
-## 🧪 Tests
+### Tickets
+| Método | Ruta                        | Auth | Descripción            |
+| ------ | ----------------------------| ---- | ---------------------- |
+| GET    | `/api/v1/tickets/`          | Sí   | Listar tickets         |
+| GET    | `/api/v1/tickets/{id}`      | Sí   | Obtener ticket         |
+| GET    | `/api/v1/tickets/user/{id}` | Sí   | Tickets de usuario     |
+| POST   | `/api/v1/tickets/`          | Sí   | Crear ticket           |
+| PUT    | `/api/v1/tickets/{id}`      | Sí   | Actualizar ticket      |
+| DELETE | `/api/v1/tickets/{id}`      | Sí   | Eliminar ticket        |
 
-Ejecutar tests:
+### Órdenes
+| Método | Ruta                               | Auth | Descripción                  |
+| ------ | -----------------------------------| ---- | ---------------------------- |
+| GET    | `/api/v1/orders/`                  | Sí   | Listar órdenes               |
+| GET    | `/api/v1/orders/{id}`              | Sí   | Obtener orden                |
+| GET    | `/api/v1/orders/user/{id}`         | Sí   | Órdenes de usuario           |
+| POST   | `/api/v1/orders/`                  | Sí   | Crear orden                  |
+| PUT    | `/api/v1/orders/{id}`              | Sí   | Actualizar orden             |
+| DELETE | `/api/v1/orders/{id}`              | Sí   | Eliminar orden               |
+| POST   | `/api/v1/orders/{id}/payments/`    | Sí   | Crear pago                   |
+| GET    | `/api/v1/orders/{id}/payments/`    | Sí   | Listar pagos de orden        |
+| PUT    | `/api/v1/orders/payments/{id}`     | Sí   | Actualizar pago              |
 
-```bash
-pytest
-```
+### Detalles de orden
+| Método | Ruta                               | Auth | Descripción                  |
+| ------ | -----------------------------------| ---- | ---------------------------- |
+| GET    | `/api/v1/order-details/`           | Sí   | Listar detalles              |
+| GET    | `/api/v1/order-details/{id}`       | Sí   | Obtener detalle              |
+| GET    | `/api/v1/order-details/order/{id}` | Sí   | Detalles por orden           |
+| POST   | `/api/v1/order-details/`           | Sí   | Crear detalle                |
+| PUT    | `/api/v1/order-details/{id}`       | Sí   | Actualizar detalle           |
+| DELETE | `/api/v1/order-details/{id}`       | Sí   | Eliminar detalle             |
 
-Con cobertura:
+### Health
+| Método | Ruta                 | Auth | Descripción     |
+| ------ | -------------------- | ---- | --------------- |
+| GET    | `/health`            | No   | Health check    |
+| GET    | `/api/v1/health`     | No   | API health      |
 
-```bash
-pytest --cov=app
-```
+## Licencia
 
-## 📝 Próximos Pasos
+MIT — Ver archivo `LICENSE`.
 
-- [ ] Implementar autenticación con JWT
-- [ ] Agregar endpoints de login/logout
-- [ ] Implementar roles y permisos
-- [ ] Agregar validaciones de negocio
-- [ ] Implementar notificaciones por email
-- [ ] Agregar paginación mejorada
-- [ ] Implementar filtros avanzados
-- [ ] Agregar logging
-- [ ] Implementar caché
-- [ ] Agregar rate limiting
-
-## 📄 Licencia
-
-Este proyecto está bajo la licencia MIT. Ver archivo `LICENSE`.
-
-## 👤 Autor
-
-**Tu Nombre**
+## Autor
 
 - GitHub: [@bxZknith85](https://github.com/bxZknith85)
-
-## 🤝 Contribuir
-
-Las contribuciones son bienvenidas. Para cambios importantes, por favor abre un issue primero para discutir los cambios propuestos.
-
-## 📞 Contacto
-
-Si tienes preguntas o sugerencias, no dudes en contactarme.
-
----
-
-Hecho con ❤️ por [bxZknith85](https://github.com/bxZknith85)
