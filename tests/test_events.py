@@ -17,15 +17,15 @@ EVENT_UPDATE = {
 
 
 class TestCreateEvent:
-    def test_crear_evento(self, client):
-        response = client.post(BASE + "/", json=EVENT_DATA)
+    def test_crear_evento(self, client, auth_headers):
+        response = client.post(BASE + "/", json=EVENT_DATA, headers=auth_headers)
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
         assert data["name"] == EVENT_DATA["name"]
         assert "id" in data
 
-    def test_crear_evento_datos_invalidos(self, client):
-        response = client.post(BASE + "/", json={"name": ""})
+    def test_crear_evento_datos_invalidos(self, client, auth_headers):
+        response = client.post(BASE + "/", json={"name": ""}, headers=auth_headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
@@ -57,24 +57,24 @@ class TestListEvents:
 
 
 class TestUpdateEvent:
-    def test_actualizar_evento(self, client):
-        response = client.put(f"{BASE}/1", json=EVENT_UPDATE)
+    def test_actualizar_evento(self, client, auth_headers):
+        response = client.put(f"{BASE}/1", json=EVENT_UPDATE, headers=auth_headers)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["name"] == EVENT_UPDATE["name"]
 
-    def test_actualizar_evento_no_existente(self, client):
-        response = client.put(f"{BASE}/999", json=EVENT_UPDATE)
+    def test_actualizar_evento_no_existente(self, client, auth_headers):
+        response = client.put(f"{BASE}/999", json=EVENT_UPDATE, headers=auth_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert "Evento no encontrado" in response.json()["detail"]
 
 
 class TestDeleteEvent:
-    def test_eliminar_evento(self, client):
-        response = client.delete(f"{BASE}/1")
+    def test_eliminar_evento(self, client, auth_headers):
+        response = client.delete(f"{BASE}/1", headers=auth_headers)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
-    def test_eliminar_evento_no_existente(self, client):
-        response = client.delete(f"{BASE}/999")
+    def test_eliminar_evento_no_existente(self, client, auth_headers):
+        response = client.delete(f"{BASE}/999", headers=auth_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert "Evento no encontrado" in response.json()["detail"]

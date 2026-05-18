@@ -47,54 +47,54 @@ class TestCreateUser:
 
 
 class TestGetUser:
-    def test_obtener_usuario(self, client):
-        response = client.get(f"{BASE}/{_user_id}")
+    def test_obtener_usuario(self, client, auth_headers):
+        response = client.get(f"{BASE}/{_user_id}", headers=auth_headers)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["id"] == _user_id
         assert data["email"] == USER_DATA["email"]
 
-    def test_obtener_usuario_no_existente(self, client):
-        response = client.get(f"{BASE}/999")
+    def test_obtener_usuario_no_existente(self, client, auth_headers):
+        response = client.get(f"{BASE}/999", headers=auth_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert "Usuario no encontrado" in response.json()["detail"]
 
 
 class TestListUsers:
-    def test_listar_usuarios(self, client):
-        response = client.get(BASE + "/")
+    def test_listar_usuarios(self, client, auth_headers):
+        response = client.get(BASE + "/", headers=auth_headers)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert isinstance(data, list)
         assert len(data) >= 1
 
-    def test_listar_usuarios_con_paginacion(self, client):
-        response = client.get(BASE + "/?skip=0&limit=10")
+    def test_listar_usuarios_con_paginacion(self, client, auth_headers):
+        response = client.get(BASE + "/?skip=0&limit=10", headers=auth_headers)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert isinstance(data, list)
 
 
 class TestUpdateUser:
-    def test_actualizar_usuario(self, client):
-        response = client.put(f"{BASE}/{_user_id}", json=USER_UPDATE)
+    def test_actualizar_usuario(self, client, auth_headers):
+        response = client.put(f"{BASE}/{_user_id}", json=USER_UPDATE, headers=auth_headers)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["phone_number"] == USER_UPDATE["phone_number"]
         assert data["is_active"] == USER_UPDATE["is_active"]
 
-    def test_actualizar_usuario_no_existente(self, client):
-        response = client.put(f"{BASE}/999", json=USER_UPDATE)
+    def test_actualizar_usuario_no_existente(self, client, auth_headers):
+        response = client.put(f"{BASE}/999", json=USER_UPDATE, headers=auth_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert "Usuario no encontrado" in response.json()["detail"]
 
 
 class TestDeleteUser:
-    def test_eliminar_usuario(self, client):
-        response = client.delete(f"{BASE}/{_user_id}")
+    def test_eliminar_usuario(self, client, auth_headers):
+        response = client.delete(f"{BASE}/{_user_id}", headers=auth_headers)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
-    def test_eliminar_usuario_no_existente(self, client):
-        response = client.delete(f"{BASE}/999")
+    def test_eliminar_usuario_no_existente(self, client, auth_headers):
+        response = client.delete(f"{BASE}/999", headers=auth_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert "Usuario no encontrado" in response.json()["detail"]

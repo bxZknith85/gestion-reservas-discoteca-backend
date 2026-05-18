@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.api.v1.endpoints.auth import get_current_user
 from app.crud import table_price as crud_table_price
 from app.db.database import get_db
 from app.schemas.table_price import (
@@ -8,12 +9,13 @@ from app.schemas.table_price import (
     TablePriceResponse,
     TablePriceUpdate,
 )
+from app.schemas.usuario import UsuarioResponse
 
 router = APIRouter(prefix="/table-prices", tags=["table-prices"])
 
 
 @router.post("/", response_model=TablePriceResponse, status_code=status.HTTP_201_CREATED)
-def crear(obj: TablePriceCreate, db: Session = Depends(get_db)):
+def crear(obj: TablePriceCreate, db: Session = Depends(get_db), _usuario: UsuarioResponse = Depends(get_current_user)):
     existente = crud_table_price.obtener_por_mesa_evento(db, obj.table_id, obj.event_id)
     if existente:
         raise HTTPException(
@@ -24,7 +26,7 @@ def crear(obj: TablePriceCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/{id}", response_model=TablePriceResponse)
-def obtener(id: int, db: Session = Depends(get_db)):
+def obtener(id: int, db: Session = Depends(get_db), _usuario: UsuarioResponse = Depends(get_current_user)):
     obj = crud_table_price.obtener_por_id(db, id)
     if not obj:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Precio de mesa no encontrado")
@@ -32,22 +34,36 @@ def obtener(id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/event/{event_id}", response_model=list[TablePriceResponse])
-def listar_por_evento(event_id: int, db: Session = Depends(get_db)):
+def listar_por_evento(
+    event_id: int, db: Session = Depends(get_db), _usuario: UsuarioResponse = Depends(get_current_user)
+):
     return crud_table_price.obtener_por_evento(db, event_id)
 
 
 @router.get("/table/{table_id}", response_model=list[TablePriceResponse])
-def listar_por_mesa(table_id: int, db: Session = Depends(get_db)):
+def listar_por_mesa(
+    table_id: int, db: Session = Depends(get_db), _usuario: UsuarioResponse = Depends(get_current_user)
+):
     return crud_table_price.obtener_por_mesa(db, table_id)
 
 
 @router.get("/", response_model=list[TablePriceResponse])
-def listar(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def listar(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    _usuario: UsuarioResponse = Depends(get_current_user),
+):
     return crud_table_price.obtener_todos(db, skip, limit)
 
 
 @router.put("/{id}", response_model=TablePriceResponse)
-def actualizar(id: int, obj_update: TablePriceUpdate, db: Session = Depends(get_db)):
+def actualizar(
+    id: int,
+    obj_update: TablePriceUpdate,
+    db: Session = Depends(get_db),
+    _usuario: UsuarioResponse = Depends(get_current_user),
+):
     obj = crud_table_price.actualizar(db, id, obj_update)
     if not obj:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Precio de mesa no encontrado")
@@ -55,6 +71,6 @@ def actualizar(id: int, obj_update: TablePriceUpdate, db: Session = Depends(get_
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def eliminar(id: int, db: Session = Depends(get_db)):
+def eliminar(id: int, db: Session = Depends(get_db), _usuario: UsuarioResponse = Depends(get_current_user)):
     if not crud_table_price.eliminar(db, id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Precio de mesa no encontrado")

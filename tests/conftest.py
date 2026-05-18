@@ -88,3 +88,18 @@ def db_session():
 @pytest.fixture
 def client():
     return TestClient(app)
+
+
+@pytest.fixture
+def auth_headers(client):
+    data = {
+        "email": "auth_fixture@test.com",
+        "username": "authfixture",
+        "phone_number": "9998887777",
+        "type_user_id": 1,
+        "password": "testpass123",
+    }
+    client.post("/api/v1/users/", json=data)
+    r = client.post("/api/v1/auth/login", json={"email": "auth_fixture@test.com", "password": "testpass123"})
+    token = r.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}

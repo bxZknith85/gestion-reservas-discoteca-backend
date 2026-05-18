@@ -27,31 +27,43 @@ def obtener_usuario_actual(usuario: UsuarioResponse = Depends(get_current_user))
 
 
 @router.get("/{user_id}", response_model=UsuarioResponse)
-def obtener_usuario(user_id: int, db: Session = Depends(get_db)):
+def obtener_usuario(user_id: int, db: Session = Depends(get_db), _usuario: UsuarioResponse = Depends(get_current_user)):
     """Obtener un usuario por ID"""
-    usuario = CRUDUsuario.obtener_por_id(db, user_id)
-    if not usuario:
+    user = CRUDUsuario.obtener_por_id(db, user_id)
+    if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
-    return usuario
+    return user
 
 
 @router.get("/", response_model=list[UsuarioResponse])
-def listar_usuarios(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def listar_usuarios(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    _usuario: UsuarioResponse = Depends(get_current_user),
+):
     """Listar todos los usuarios"""
     return CRUDUsuario.obtener_todos(db, skip, limit)
 
 
 @router.put("/{user_id}", response_model=UsuarioResponse)
-def actualizar_usuario(user_id: int, usuario_update: UsuarioUpdate, db: Session = Depends(get_db)):
+def actualizar_usuario(
+    user_id: int,
+    usuario_update: UsuarioUpdate,
+    db: Session = Depends(get_db),
+    _usuario: UsuarioResponse = Depends(get_current_user),
+):
     """Actualizar un usuario"""
-    usuario = CRUDUsuario.actualizar(db, user_id, usuario_update)
-    if not usuario:
+    user = CRUDUsuario.actualizar(db, user_id, usuario_update)
+    if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
-    return usuario
+    return user
 
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def eliminar_usuario(user_id: int, db: Session = Depends(get_db)):
+def eliminar_usuario(
+    user_id: int, db: Session = Depends(get_db), _usuario: UsuarioResponse = Depends(get_current_user)
+):
     """Eliminar un usuario"""
     if not CRUDUsuario.eliminar(db, user_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
