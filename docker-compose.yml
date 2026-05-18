@@ -5,10 +5,7 @@ services:
     build: .
     container_name: gestion_reservas_backend
     environment:
-      # Supabase Configuration
       DATABASE_URL: ${DATABASE_URL}
-      SUPABASE_URL: ${SUPABASE_URL}
-      SUPABASE_KEY: ${SUPABASE_KEY}
       
       # App Configuration
       DEBUG: "False"

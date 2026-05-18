@@ -62,7 +62,7 @@ def init_db(max_retries=3, retry_delay=3):
                 print("💡 Soluciones:")
                 print("1. Verifica que las credenciales en .env sean correctas")
                 print("2. Verifica tu conexión a internet (necesario para Supabase)")
-                print("3. Alterna: Usa la consola SQL de Supabase en https://supabase.com/dashboard")
+                print("3. Alterna: Usa la consola SQL de tu base de datos")
                 return False
 
     return False

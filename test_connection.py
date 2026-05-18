@@ -58,7 +58,6 @@ except Exception as e:
     print(f"   {str(e)[:150]}")
     print("\n   Verifica que el .env tenga:")
     print("   - DATABASE_URL correcta")
-    print("   - SUPABASE_URL correcta")
     print("   - Contraseña de postgres correcta")
     exit(1)
 

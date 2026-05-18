@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     PROJECT_DESCRIPTION: str = "Sistema backend para gestión de reservas en discotecas"
     VERSION: str = "1.0.0"
 
-    # Database - Supabase PostgreSQL (usando psycopg3)
+    # Database - PostgreSQL (Neon)
     DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql+psycopg://postgres:password@localhost:5432/postgres")
 
     # JWT
@@ -26,10 +26,6 @@ class Settings(BaseSettings):
     # Environment
     DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
-
-    # Supabase
-    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
-    SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")
 
     class Config:
         env_file = ".env"
