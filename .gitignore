@@ -46,7 +46,7 @@ htmlcov/
 test.db
 
 # Alembic
-migrations/versions/
+# migrations/versions/  # Los version files se commitean
 
 # Logs
 *.log
