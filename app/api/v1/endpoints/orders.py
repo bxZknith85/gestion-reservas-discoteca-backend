@@ -48,7 +48,7 @@ def eliminar(id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/{order_id}/payments/", response_model=PaymentResponse, status_code=status.HTTP_201_CREATED)
-def crear_pago(_order_id: int, obj: PaymentCreate, db: Session = Depends(get_db)):
+def crear_pago(order_id: int, obj: PaymentCreate, db: Session = Depends(get_db)):  # noqa: ARG001
     return crud_payment.crear(db, obj)
 
 

@@ -43,6 +43,7 @@ env/
 .coverage
 htmlcov/
 .tox/
+test.db
 
 # Alembic
 migrations/versions/
