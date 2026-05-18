@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: gestion-reservas-discoteca-api
+    runtime: docker
+    repo: https://github.com/bxZknith85/gestion-reservas-discoteca-backend
+    branch: master
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: API_V1_STR
+        value: /api/v1
+      - key: BACKEND_CORS_ORIGINS
+        value: '["http://localhost:3000","http://localhost:8000"]'
+      - key: PORT
+        value: "8000"
+      - key: UVICORN_WORKERS
+        value: "4"
