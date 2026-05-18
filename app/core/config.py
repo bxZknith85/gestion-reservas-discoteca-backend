@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    """Configuración de la aplicación - Supabase"""
+    """Configuración de la aplicación"""
 
     # API
     API_V1_STR: str = "/api/v1"
@@ -20,8 +20,8 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    # CORS
-    BACKEND_CORS_ORIGINS: list = ["http://localhost:3000", "http://localhost:8000", "https://localhost:3000"]
+    # CORS — se parsea automáticamente desde JSON string en .env
+    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:8000"]
 
     # Environment
     DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
