@@ -2,11 +2,15 @@
 set -e
 
 echo "Running migrations..."
-python manage.py migrate --noinput 2>&1 || {
+set +e
+python manage.py migrate --noinput 2>&1
+rc=$?
+set -e
+if [ $rc -ne 0 ]; then
     echo "Faking all migrations (existing database)..."
     python manage.py migrate --fake --noinput
     python manage.py migrate --noinput
-}
+fi
 echo "Seeding catalog and config data..."
 python manage.py seed_data --no-color
 
