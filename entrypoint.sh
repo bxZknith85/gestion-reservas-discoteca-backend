@@ -1,23 +1,20 @@
 #!/bin/bash
 set -e
 
-echo "Resetting migration records for idempotent deploy..."
+echo "Creating database schemas if they don't exist..."
 python -c "
 import django; django.setup()
 from django.db import connection
+SCHEMAS = ['catalog', 'core', 'transactions', 'audit', 'system']
 with connection.cursor() as c:
-    c.execute('DELETE FROM django_migrations')
-" 2>/dev/null || true
+    for schema in SCHEMAS:
+        c.execute(f'CREATE SCHEMA IF NOT EXISTS {schema}')
+print('Schemas created successfully')
+"
 
 echo "Running migrations..."
-set +e
-python manage.py migrate --noinput 2>&1
-rc=$?
-set -e
-if [ $rc -ne 0 ]; then
-    echo "Faking remaining migrations (app tables already exist)..."
-    python manage.py migrate --fake --noinput
-fi
+python manage.py migrate --noinput
+
 echo "Seeding catalog and config data..."
 python manage.py seed_data --no-color
 

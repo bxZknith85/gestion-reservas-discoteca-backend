@@ -13,6 +13,9 @@ class UserSerializer(serializers.ModelSerializer):
             "type_user", "fcm_token", "is_active", "created_at", "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
+        extra_kwargs = {
+            "type_user": {"required": False, "allow_null": True},
+        }
 
     def create(self, validated_data):
         password = validated_data.pop("password")

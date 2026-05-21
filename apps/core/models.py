@@ -28,6 +28,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         on_delete=models.PROTECT,
         db_column="type_user_id",
         verbose_name="tipo de usuario",
+        null=True,
+        blank=True,
+        default=None,
     )
     fcm_token = models.TextField("token FCM", null=True, blank=True)
     is_active = models.BooleanField("activo", default=True)
