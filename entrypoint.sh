@@ -2,6 +2,7 @@
 set -e
 
 echo "Running migrations..."
+python manage.py migrate --fake-initial --noinput
 python manage.py migrate --noinput
 
 echo "Starting Gunicorn..."
