@@ -15,6 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN chmod +x entrypoint.sh
+
 EXPOSE 8000
 
 RUN python manage.py collectstatic --noinput --clear 2>/dev/null || true
