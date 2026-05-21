@@ -63,7 +63,7 @@ APPCONFIG_DATA = [
 class Command(BaseCommand):
     help = "Siembra datos iniciales de catálogo y configuración"
 
-    def handle(self, *args, **options):
+    def handle(self, *_args, **_options):
         from django.apps import apps
 
         for model_name, rows in CATALOG_DATA.items():

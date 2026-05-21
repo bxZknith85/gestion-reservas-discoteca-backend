@@ -86,6 +86,7 @@ def _set_search_path(sender, connection, **kwargs):
             cursor.execute("SET search_path TO catalog,core,transactions,audit,system,public")
 
 from django.db.backends.signals import connection_created  # noqa: E402
+
 connection_created.connect(_set_search_path)
 
 # ---- Custom User Model ----
