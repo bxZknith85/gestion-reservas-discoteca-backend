@@ -79,9 +79,14 @@ _db_config["ENGINE"] = "django.db.backends.postgresql"
 DATABASES = {
     "default": _db_config,
 }
-DATABASES["default"]["OPTIONS"] = {
-    "options": "-c search_path=catalog,core,transactions,audit,system,public"
-}
+
+def _set_search_path(sender, connection, **kwargs):
+    if connection.vendor == "postgresql":
+        with connection.cursor() as cursor:
+            cursor.execute("SET search_path TO catalog,core,transactions,audit,system,public")
+
+from django.db.backends.signals import connection_created  # noqa: E402
+connection_created.connect(_set_search_path)
 
 # ---- Custom User Model ----
 AUTH_USER_MODEL = "core.User"
