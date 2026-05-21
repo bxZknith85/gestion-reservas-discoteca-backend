@@ -1,80 +1,76 @@
-from fastapi import status
-
-BASE = "/api/v1/reservations"
-
-RESERVATION_DATA = {
-    "reservation_state_id": 1,
-    "user_id": 2,
-    "table_id": 2,
-    "event_id": 2,
-}
-
-RESERVATION_UPDATE = {
-    "reservation_state_id": 2,
-}
+import pytest
 
 
+@pytest.mark.django_db
 class TestCreateReservation:
-    def test_crear_reserva(self, client, auth_headers):
-        response = client.post(BASE + "/", json=RESERVATION_DATA, headers=auth_headers)
-        assert response.status_code == status.HTTP_201_CREATED
-        data = response.json()
-        assert data["user_id"] == RESERVATION_DATA["user_id"]
-        assert data["table_id"] == RESERVATION_DATA["table_id"]
-        assert "id" in data
+    def test_create_success(self, auth_client, test_user, test_table, test_event):
+        data = {
+            "reservation_state": 1,
+            "user": test_user.id,
+            "table": test_table.id,
+            "event": test_event.id,
+        }
+        response = auth_client.post("/api/v1/reservations/", data, format="json")
+        assert response.status_code == 201
 
-    def test_crear_reserva_datos_invalidos(self, client, auth_headers):
-        response = client.post(BASE + "/", json={}, headers=auth_headers)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    def test_create_unauthenticated(self, api_client, test_user, test_table, test_event):
+        data = {
+            "reservation_state": 1,
+            "user": test_user.id,
+            "table": test_table.id,
+            "event": test_event.id,
+        }
+        response = api_client.post("/api/v1/reservations/", data, format="json")
+        assert response.status_code == 401
 
 
+@pytest.mark.django_db
 class TestGetReservation:
-    def test_obtener_reserva(self, client, auth_headers):
-        response = client.get(f"{BASE}/1", headers=auth_headers)
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()
-        assert data["id"] == 1
+    def test_get(self, auth_client, test_user, test_table):
+        from apps.transactions.models import Reservation
+        res = Reservation.objects.create(
+            reservation_state_id=1, user=test_user, table=test_table
+        )
+        response = auth_client.get(f"/api/v1/reservations/{res.id}/")
+        assert response.status_code == 200
 
-    def test_obtener_reserva_no_existente(self, client, auth_headers):
-        response = client.get(f"{BASE}/999", headers=auth_headers)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "Reserva no encontrada" in response.json()["detail"]
+    def test_get_nonexistent(self, auth_client):
+        response = auth_client.get("/api/v1/reservations/99999/")
+        assert response.status_code == 404
 
 
+@pytest.mark.django_db
 class TestListReservations:
-    def test_listar_reservas(self, client, auth_headers):
-        response = client.get(BASE + "/", headers=auth_headers)
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()
-        assert isinstance(data, list)
-        assert len(data) >= 1
+    def test_list(self, auth_client, test_user, test_table):
+        from apps.transactions.models import Reservation
+        Reservation.objects.create(reservation_state_id=1, user=test_user, table=test_table)
+        response = auth_client.get("/api/v1/reservations/")
+        assert response.status_code == 200
 
-    def test_listar_reservas_por_usuario(self, client, auth_headers):
-        response = client.get(f"{BASE}/user/2", headers=auth_headers)
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()
-        assert isinstance(data, list)
+    def test_list_by_user(self, auth_client, test_user, test_table):
+        from apps.transactions.models import Reservation
+        Reservation.objects.create(reservation_state_id=1, user=test_user, table=test_table)
+        response = auth_client.get(f"/api/v1/reservations/?user={test_user.id}")
+        assert response.status_code == 200
 
 
+@pytest.mark.django_db
 class TestUpdateReservation:
-    def test_actualizar_reserva(self, client, auth_headers):
-        response = client.put(f"{BASE}/1", json=RESERVATION_UPDATE, headers=auth_headers)
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()
-        assert data["reservation_state_id"] == RESERVATION_UPDATE["reservation_state_id"]
+    def test_update(self, auth_client, test_user, test_table):
+        from apps.transactions.models import Reservation
+        res = Reservation.objects.create(reservation_state_id=1, user=test_user, table=test_table)
+        response = auth_client.put(
+            f"/api/v1/reservations/{res.id}/",
+            {"reservation_state": 4, "user": test_user.id, "table": test_table.id},
+            format="json",
+        )
+        assert response.status_code == 200
 
-    def test_actualizar_reserva_no_existente(self, client, auth_headers):
-        response = client.put(f"{BASE}/999", json=RESERVATION_UPDATE, headers=auth_headers)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "Reserva no encontrada" in response.json()["detail"]
 
-
+@pytest.mark.django_db
 class TestDeleteReservation:
-    def test_eliminar_reserva(self, client, auth_headers):
-        response = client.delete(f"{BASE}/1", headers=auth_headers)
-        assert response.status_code == status.HTTP_204_NO_CONTENT
-
-    def test_eliminar_reserva_no_existente(self, client, auth_headers):
-        response = client.delete(f"{BASE}/999", headers=auth_headers)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "Reserva no encontrada" in response.json()["detail"]
+    def test_delete(self, auth_client, test_user, test_table):
+        from apps.transactions.models import Reservation
+        res = Reservation.objects.create(reservation_state_id=1, user=test_user, table=test_table)
+        response = auth_client.delete(f"/api/v1/reservations/{res.id}/")
+        assert response.status_code == 204

@@ -13,8 +13,6 @@ services:
         sync: false
       - key: SECRET_KEY
         generateValue: true
-      - key: ALGORITHM
-        value: HS256
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: "30"
       - key: ENVIRONMENT
@@ -25,7 +23,5 @@ services:
         value: /api/v1
       - key: BACKEND_CORS_ORIGINS
         value: '["http://localhost:3000","http://localhost:8000"]'
-      - key: PORT
-        value: "8000"
-      - key: UVICORN_WORKERS
-        value: "4"
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings

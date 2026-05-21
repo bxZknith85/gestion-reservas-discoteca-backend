@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-echo "Ejecutando migraciones..."
-alembic upgrade head
+echo "Running migrations..."
+python manage.py migrate --noinput
 
-echo "Iniciando servidor..."
-exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers ${UVICORN_WORKERS:-4}
+echo "Starting Gunicorn..."
+exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --access-logfile -

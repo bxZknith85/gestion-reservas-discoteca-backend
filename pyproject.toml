@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gestion-reservas-discoteca"
-version = "1.0.0"
-description = "Sistema de gestión de reservas para discotecas"
+version = "2.0.0"
+description = "Sistema de gestión de reservas para discotecas (Django)"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
@@ -15,13 +15,21 @@ authors = [{name = "Tu Nombre", email = "tu.email@example.com"}]
 Repository = "https://github.com/bxZknith85/gestion-reservas-discoteca-backend"
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
 line-length = 120
 exclude = ["migrations", ".venv", "venv"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG", "RUF100"]
-ignore = ["B008"]  # FastAPI usa Depends() en argumentos por defecto
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ARG001", "ARG002"]
+"config/test_settings.py" = ["E402"]
 
 [tool.ruff.format]
 quote-style = "double"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.test_settings"
+python_files = ["tests/test_*.py"]
+testpaths = ["tests"]

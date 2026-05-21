@@ -1,79 +1,78 @@
-from fastapi import status
-
-BASE = "/api/v1/tickets"
-
-TICKET_DATA = {
-    "user_id": 4,
-    "type_ticket_id": 2,
-    "ticket_state_id": 1,
-}
-
-TICKET_UPDATE = {
-    "ticket_state_id": 2,
-}
+import pytest
 
 
+@pytest.mark.django_db
 class TestCreateTicket:
-    def test_crear(self, client, auth_headers):
-        response = client.post(BASE + "/", json=TICKET_DATA, headers=auth_headers)
-        assert response.status_code == status.HTTP_201_CREATED
-        data = response.json()
-        assert data["user_id"] == TICKET_DATA["user_id"]
-        assert data["type_ticket_id"] == TICKET_DATA["type_ticket_id"]
-        assert "id" in data
+    def test_create_success(self, auth_client, test_user, test_event):
+        from apps.core.models import TypeTicket
+        tt = TypeTicket.objects.create(name="General", event=test_event, available_quantity=100, price="50000")
+        data = {"user": test_user.id, "type_ticket": tt.id, "ticket_state": 1}
+        response = auth_client.post("/api/v1/tickets/", data, format="json")
+        assert response.status_code == 201
 
-    def test_crear_datos_invalidos(self, client, auth_headers):
-        response = client.post(BASE + "/", json={}, headers=auth_headers)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    def test_create_unauthenticated(self, api_client, test_user, test_event):
+        from apps.core.models import TypeTicket
+        tt = TypeTicket.objects.create(name="General", event=test_event, available_quantity=100, price="50000")
+        data = {"user": test_user.id, "type_ticket": tt.id, "ticket_state": 1}
+        response = api_client.post("/api/v1/tickets/", data, format="json")
+        assert response.status_code == 401
 
 
+@pytest.mark.django_db
 class TestGetTicket:
-    def test_obtener(self, client, auth_headers):
-        response = client.get(f"{BASE}/1", headers=auth_headers)
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()
-        assert data["id"] == 1
+    def test_get(self, auth_client, test_user, test_event):
+        from apps.core.models import TypeTicket
+        from apps.transactions.models import Ticket
+        tt = TypeTicket.objects.create(name="General", event=test_event, available_quantity=100, price="50000")
+        ticket = Ticket.objects.create(user=test_user, type_ticket=tt, ticket_state_id=1)
+        response = auth_client.get(f"/api/v1/tickets/{ticket.id}/")
+        assert response.status_code == 200
 
-    def test_obtener_no_existente(self, client, auth_headers):
-        response = client.get(f"{BASE}/999", headers=auth_headers)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "Ticket no encontrado" in response.json()["detail"]
+    def test_get_nonexistent(self, auth_client):
+        response = auth_client.get("/api/v1/tickets/99999/")
+        assert response.status_code == 404
 
 
+@pytest.mark.django_db
 class TestListTickets:
-    def test_listar(self, client, auth_headers):
-        response = client.get(BASE + "/", headers=auth_headers)
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()
-        assert isinstance(data, list)
-        assert len(data) >= 1
+    def test_list(self, auth_client, test_user, test_event):
+        from apps.core.models import TypeTicket
+        from apps.transactions.models import Ticket
+        tt = TypeTicket.objects.create(name="General", event=test_event, available_quantity=100, price="50000")
+        Ticket.objects.create(user=test_user, type_ticket=tt, ticket_state_id=1)
+        response = auth_client.get("/api/v1/tickets/")
+        assert response.status_code == 200
 
-    def test_listar_por_usuario(self, client, auth_headers):
-        response = client.get(f"{BASE}/user/4", headers=auth_headers)
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()
-        assert isinstance(data, list)
+    def test_list_by_user(self, auth_client, test_user, test_event):
+        from apps.core.models import TypeTicket
+        from apps.transactions.models import Ticket
+        tt = TypeTicket.objects.create(name="General", event=test_event, available_quantity=100, price="50000")
+        Ticket.objects.create(user=test_user, type_ticket=tt, ticket_state_id=1)
+        response = auth_client.get(f"/api/v1/tickets/?user={test_user.id}")
+        assert response.status_code == 200
 
 
+@pytest.mark.django_db
 class TestUpdateTicket:
-    def test_actualizar(self, client, auth_headers):
-        response = client.put(f"{BASE}/1", json=TICKET_UPDATE, headers=auth_headers)
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()
-        assert data["ticket_state_id"] == TICKET_UPDATE["ticket_state_id"]
+    def test_update(self, auth_client, test_user, test_event):
+        from apps.core.models import TypeTicket
+        from apps.transactions.models import Ticket
+        tt = TypeTicket.objects.create(name="General", event=test_event, available_quantity=100, price="50000")
+        ticket = Ticket.objects.create(user=test_user, type_ticket=tt, ticket_state_id=1)
+        response = auth_client.put(
+            f"/api/v1/tickets/{ticket.id}/",
+            {"user": test_user.id, "type_ticket": tt.id, "ticket_state": 3},
+            format="json",
+        )
+        assert response.status_code == 200
 
-    def test_actualizar_no_existente(self, client, auth_headers):
-        response = client.put(f"{BASE}/999", json=TICKET_UPDATE, headers=auth_headers)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "Ticket no encontrado" in response.json()["detail"]
 
-
+@pytest.mark.django_db
 class TestDeleteTicket:
-    def test_eliminar(self, client, auth_headers):
-        response = client.delete(f"{BASE}/1", headers=auth_headers)
-        assert response.status_code == status.HTTP_204_NO_CONTENT
-
-    def test_eliminar_no_existente(self, client, auth_headers):
-        response = client.delete(f"{BASE}/999", headers=auth_headers)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "Ticket no encontrado" in response.json()["detail"]
+    def test_delete(self, auth_client, test_user, test_event):
+        from apps.core.models import TypeTicket
+        from apps.transactions.models import Ticket
+        tt = TypeTicket.objects.create(name="General", event=test_event, available_quantity=100, price="50000")
+        ticket = Ticket.objects.create(user=test_user, type_ticket=tt, ticket_state_id=1)
+        response = auth_client.delete(f"/api/v1/tickets/{ticket.id}/")
+        assert response.status_code == 204

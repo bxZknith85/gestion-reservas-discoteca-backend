@@ -1,20 +1,14 @@
-from fastapi.testclient import TestClient
-
-from app.main import app
-
-client = TestClient(app)
+import pytest
 
 
-def test_health_check():
-    """Test del endpoint de salud"""
-    response = client.get("/")
-    assert response.status_code == 200
-    assert "version" in response.json()
-    assert "message" in response.json()
+@pytest.mark.django_db
+class TestHealth:
+    def test_root_health(self, api_client):
+        response = api_client.get("/health/")
+        assert response.status_code == 200
+        assert response.data["status"] == "ok"
 
-
-def test_api_health():
-    """Test del endpoint de salud de la API"""
-    response = client.get("/api/v1/health")
-    assert response.status_code == 200
-    assert response.json()["status"] == "healthy"
+    def test_api_health(self, api_client):
+        response = api_client.get("/api/v1/health/")
+        assert response.status_code == 200
+        assert response.data["status"] == "ok"
